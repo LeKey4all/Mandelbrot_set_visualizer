@@ -20,18 +20,16 @@ minX = x - xRange / 2
 maxX = x + xRange / 2
 minY = y - yRange / 2
 maxY = y + yRange / 2
-progress = 1
 
 img = Image.new('RGB', (pic_width, pic_height), color='black')
 pixels = img.load()
 
 for row in range(pic_height):
     for col in range(pic_width):
-        x = minX + col + xRange / pic_width
+        x = minX + col * xRange / pic_width
         y = maxY - row * yRange / pic_height
         oldX = x
         oldY = y
-
         for i in range(precision+1):
             a = x*x - y*y   #real part of z^2
             b = 2*x*y       #imaginary part of z^2
@@ -41,14 +39,16 @@ for row in range(pic_height):
             #if point diverges break:
             if x*x + y*y > 4:
                 break
-
         #compute the pixel value with the advancement in percision threshold
-        if progress < precision:
-            distance = (progress + 1) / (precision + 1)
-            rgb = powerColor(distance, 0.2, 0.27, 1)
+        if i < precision:
+            distance = (i + 1) / (precision + 1)
+            rgb = powerColor(distance, 0.2, 0.27, 1.0)
             pixels[col, row] = rgb
+        index = row * pic_width + col + 1
+        print("{} / {}, {}%".format(index, pic_width * pic_height,
+                                    round(index / pic_width / pic_height * 100 * 10) / 10))
 
-#img.save('Output.png')
+img.save('Output.png')
 img.show()
 
 
